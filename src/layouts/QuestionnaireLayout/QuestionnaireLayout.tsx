@@ -1,15 +1,16 @@
 import styles from "./QuestionnaireLayout.module.css";
-import { useQuestions } from "@/api/questions";
+import { SharedQuestion, useQuestions } from "@/api/questions";
 import { Alert } from "@/lib/Alert";
 import { Loader } from "@/lib/Loader";
 import { Questions } from "@/layouts/QuestionnaireLayout/Questions";
 
 interface QuestionnaireLayoutProps {
   questionnaireId: number;
+  sharedQuestion?: SharedQuestion;
 }
 
-const QuestionnaireLayout = ({ questionnaireId }: QuestionnaireLayoutProps) => {
-  const { questions, error } = useQuestions(questionnaireId);
+const QuestionnaireLayout = ({ questionnaireId, sharedQuestion }: QuestionnaireLayoutProps) => {
+  const { questions, error } = useQuestions(questionnaireId, sharedQuestion);
   if (error)
     return (
       <main className={styles.alert}>
