@@ -1,14 +1,25 @@
 import styles from "./QuestionnaireCard.module.css";
 import { Card } from "@/lib/Card";
-import { QUESTIONNAIRE_ID, questions } from "@/data/questions";
+import { useQuestionnaires } from "@/api/questionnaires";
+import { Questionnaire } from "@/data/questionnaires";
 
 const QuestionnaireCard = () => {
+  const { questionnaires, error } = useQuestionnaires();
+
+  if (error) {
+    return <p>Error fetching questionnaires: {error}</p>;
+  }
+
   return (
-    <Card
-      href={`/questionnaire/${QUESTIONNAIRE_ID}`}
-      title="My questionnaire"
-      footer={`${questions.length} questions`}
-    />
+    <div className={styles.cardContainer}>
+      {questionnaires.map((questionnaire: Questionnaire) => (
+        <Card
+          key={questionnaire.id}
+          href={`/questionnaire/${questionnaire.id}`}
+          title={questionnaire.name}
+        />
+      ))}
+    </div>
   );
 };
 

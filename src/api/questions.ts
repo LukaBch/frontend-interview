@@ -1,40 +1,72 @@
-import { Question, QUESTIONNAIRE_ID, questions } from "@/data/questions";
-import { sleep } from "@/api/utils";
-import { SHARING_TOKEN } from "@/data/token";
+import { Question } from "@/data/questions";
+import { API_URL, BASIC_AUTH } from "@/api/utils";
 import { useEffect, useState } from "react";
 
-export const loadQuestions = async (questionnaireId: number) => {
-  await sleep(1000);
-  if (questionnaireId !== QUESTIONNAIRE_ID)
-    throw Error("Unknown questionnaire.");
-  return questions;
+
+export const loadQuestions = async (questionnaireId: number) => {  
+  const response = await fetch(`${API_URL}questionnaires/questions/?questionnaires=${questionnaireId}`, {
+      method: 'GET',
+      headers: {
+          'Authorization': BASIC_AUTH,
+          'Content-Type': 'application/json',
+      },
+  });
+
+  if (!response.ok) {
+      throw new Error('Failed to fetch questions');
+  }
+
+  const questionnaires = await response.json();
+  return questionnaires;
 };
 
-export const useQuestions = (questionnaireId: number) => {
-  const [questions, setQuestions] = useState<Question[]>();
-  const [error, setError] = useState<string>();
+export interface SharedQuestion {
+  token: string;
+  questionId: number;
+}
+
+export const useQuestions = (questionnaireId: number, sharedQuestion?: SharedQuestion) => {
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const load = async () => {
+    const fetchQuestions = async () => {
       try {
-        setQuestions(await loadQuestions(questionnaireId));
+        if (sharedQuestion) {
+          const res = await loadQuestionWithSharingToken(questionnaireId, sharedQuestion.questionId, sharedQuestion.token);
+          setQuestions([res]);
+        } else {
+          const res = await loadQuestions(questionnaireId);
+          setQuestions(res);
+        }
       } catch (e) {
         setError((e as Error).message);
       }
     };
-    void load();
-  }, [questionnaireId]);
+
+    fetchQuestions();
+  }, [questionnaireId, sharedQuestion?.token, sharedQuestion?.questionId]);
 
   return { questions, error };
 };
 
 export const loadQuestionWithSharingToken = async (
+  questionnaireId: number,
   questionId: number,
   token: string,
 ) => {
-  await sleep(1000);
-  if (token != SHARING_TOKEN) throw Error("Wrong token");
-  const question = questions.find((q) => q.id === questionId);
-  if (!question) throw Error("Unknown question.");
-  return question;
+  const response = await fetch(`${API_URL}questionnaires/questions/?questionnaires=${questionnaireId}`, {
+    method: 'GET',
+    headers: {
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json',
+    },
+  });
+
+if (!response.ok) {
+  throw new Error('Failed to fetch questions');
+}
+
+const questionnaires = await response.json();
+return questionnaires.find((question: Question) => question.id === questionId);
 };

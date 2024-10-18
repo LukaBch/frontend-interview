@@ -1,21 +1,17 @@
 import styles from "./Questions.module.css";
-import { Question } from "@/data/questions";
-import { Chip } from "@/lib/Chip";
-import { Answers } from "./Answers";
+import { Question as QuestionType } from "@/data/questions";
+import Question from "./Question";
 
 interface QuestionsProps {
-  questions: Question[];
+  questions: QuestionType[];
+  questionnaireId: number;
 }
 
-const Questions = ({ questions }: QuestionsProps) => {
+const Questions = ({ questions, questionnaireId }: QuestionsProps) => {
   return (
     <div className={styles.root}>
       {questions.map((question) => (
-        <div className={styles.card} key={question.id}>
-          <Chip className={styles.status}>{question.status}</Chip>
-          <h2>{question.text}</h2>
-          <Answers question={question} />
-        </div>
+        <Question key={question.id} question={question} questionnaireId={questionnaireId} />
       ))}
     </div>
   );
