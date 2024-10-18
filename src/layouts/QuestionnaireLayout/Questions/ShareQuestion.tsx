@@ -6,16 +6,17 @@ const NOTIFICATION_DURATION = 1000;
 
 interface ShareQuestionProps {
   questionId: number;
+  questionnaireId: number;
 }
 
-const ShareQuestion = ({ questionId }: ShareQuestionProps) => {
+const ShareQuestion = ({ questionId, questionnaireId }: ShareQuestionProps) => {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleShare = async () => {
     setIsLoading(true);
-    getSharingToken()
+    getSharingToken(questionnaireId)
       .then((sharingToken) => {
         const shareLink = `${window.location.href}?questionId=${questionId}&token=${sharingToken}`;
         return navigator.clipboard.writeText(shareLink);

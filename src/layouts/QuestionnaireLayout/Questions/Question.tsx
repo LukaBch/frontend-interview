@@ -7,15 +7,16 @@ import ShareQuestion from "./ShareQuestion";
 
 interface QuestionProps {
   question: QuestionType;
+  questionnaireId: number;
 }
 
-const Question = ({ question }: QuestionProps) => {
+const Question = ({ question, questionnaireId }: QuestionProps) => {
   return (
     <div className={styles.card}>
       <Chip className={styles.status}>{question.status}</Chip>
       <h2>{question.text}</h2>
       <Answers question={question} />
-      <ShareQuestion questionId={question.id} />
+      <ShareQuestion questionId={question.id} questionnaireId={questionnaireId} />
     </div>
   );
 };

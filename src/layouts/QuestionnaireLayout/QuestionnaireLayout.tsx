@@ -21,7 +21,7 @@ const QuestionnaireLayout = ({ questionnaireId, sharedQuestion }: QuestionnaireL
   return (
     <main className={styles.root}>
       <h1>Here is the questionnaire content:</h1>
-      <Questions questions={questions} />
+      <Questions questions={questions} questionnaireId={questionnaireId} />
     </main>
   );
 };

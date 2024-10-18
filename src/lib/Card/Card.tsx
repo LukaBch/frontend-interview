@@ -7,7 +7,7 @@ export interface CommonCardProps {
   chip?: ReactElement;
   title: string;
   subtitle?: string | ReactElement;
-  footer: ReactNode;
+  footer?: ReactNode;
   className?: string;
   titleTag?: "h2" | "h3";
 }
@@ -24,7 +24,7 @@ const Card = ({
   icon,
   title,
   subtitle,
-  footer,
+  footer = "",
   className,
   href,
   onClick,
@@ -58,7 +58,7 @@ const Card = ({
         : null}
       <TitleTag className={styles.title}>{title}</TitleTag>
       {subtitle ? <div className={styles.subtitle}>{subtitle}</div> : null}
-      <div className={styles.footer}>{footer}</div>
+      {footer && <div className={styles.footer}>{footer}</div>}
     </BaseCard>
   );
 };

@@ -1,13 +1,25 @@
-import { Question, QUESTIONNAIRE_ID, questions } from "@/data/questions";
-import { sleep } from "@/api/utils";
-import { SHARING_TOKEN } from "@/data/token";
+import { Question } from "@/data/questions";
+import { API_URL, PASSWORD, sleep, USERNAME } from "@/api/utils";
 import { useEffect, useState } from "react";
 
+
 export const loadQuestions = async (questionnaireId: number) => {
-  await sleep(1000);
-  if (questionnaireId !== QUESTIONNAIRE_ID)
-    throw Error("Unknown questionnaire.");
-  return questions;
+  const basicAuth = 'Basic ' + btoa(`${USERNAME}:${PASSWORD}`);
+  
+  const response = await fetch(`${API_URL}questionnaires/questions/?questionnaires=${questionnaireId}`, {
+      method: 'GET',
+      headers: {
+          'Authorization': basicAuth,
+          'Content-Type': 'application/json',
+      },
+  });
+
+  if (!response.ok) {
+      throw new Error('Failed to fetch questions');
+  }
+
+  const questionnaires = await response.json();
+  return questionnaires;
 };
 
 export interface SharedQuestion {
@@ -23,7 +35,7 @@ export const useQuestions = (questionnaireId: number, sharedQuestion?: SharedQue
     const fetchQuestions = async () => {
       try {
         if (sharedQuestion) {
-          const res = await loadQuestionWithSharingToken(sharedQuestion.questionId, sharedQuestion.token);
+          const res = await loadQuestionWithSharingToken(questionnaireId, sharedQuestion.questionId, sharedQuestion.token);
           setQuestions([res]);
         } else {
           const res = await loadQuestions(questionnaireId);
@@ -41,12 +53,22 @@ export const useQuestions = (questionnaireId: number, sharedQuestion?: SharedQue
 };
 
 export const loadQuestionWithSharingToken = async (
+  questionnaireId: number,
   questionId: number,
   token: string,
 ) => {
-  await sleep(1000);
-  if (token != SHARING_TOKEN) throw Error("Wrong token");
-  const question = questions.find((q) => q.id === questionId);
-  if (!question) throw Error("Unknown question.");
-  return question;
+  const response = await fetch(`${API_URL}questionnaires/questions/?questionnaires=${questionnaireId}`, {
+    method: 'GET',
+    headers: {
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json',
+    },
+  });
+
+if (!response.ok) {
+  throw new Error('Failed to fetch questions');
+}
+
+const questionnaires = await response.json();
+return questionnaires.find((question: Question) => question.id === questionId);
 };
