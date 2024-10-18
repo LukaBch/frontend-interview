@@ -1,15 +1,13 @@
 import { Question } from "@/data/questions";
-import { API_URL, PASSWORD, sleep, USERNAME } from "@/api/utils";
+import { API_URL, BASIC_AUTH } from "@/api/utils";
 import { useEffect, useState } from "react";
 
 
-export const loadQuestions = async (questionnaireId: number) => {
-  const basicAuth = 'Basic ' + btoa(`${USERNAME}:${PASSWORD}`);
-  
+export const loadQuestions = async (questionnaireId: number) => {  
   const response = await fetch(`${API_URL}questionnaires/questions/?questionnaires=${questionnaireId}`, {
       method: 'GET',
       headers: {
-          'Authorization': basicAuth,
+          'Authorization': BASIC_AUTH,
           'Content-Type': 'application/json',
       },
   });

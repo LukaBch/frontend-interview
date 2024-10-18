@@ -1,12 +1,10 @@
-import { API_URL, PASSWORD, USERNAME } from "@/api/utils";
+import { API_URL, BASIC_AUTH } from "@/api/utils";
 
-export const getSharingToken = async (questionnaireId: number) => {
-  const basicAuth = 'Basic ' + btoa(`${USERNAME}:${PASSWORD}`);
-  
+export const getSharingToken = async (questionnaireId: number) => {  
   const response = await fetch(`${API_URL}questionnaires/token/`, {
       method: 'POST',
       headers: {
-          'Authorization': basicAuth,
+          'Authorization': BASIC_AUTH,
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({ questionnaire_id:questionnaireId }),
